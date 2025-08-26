@@ -1,0 +1,9 @@
+{
+  "name": "taskhub-pro-frontend",
+  "version": "1.0.0",
+  "main": "src/App.vue",
+  "dependencies": {
+    "vue": "^3.3.4",
+    "pinia": "^2.1.7"
+  }
+}
