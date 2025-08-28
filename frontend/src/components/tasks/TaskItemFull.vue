@@ -171,6 +171,11 @@ export default {
         },
         async submitChanges() {
             if (!this.editableTask.title || !this.editableTask.priority || !this.editableTask.status || !this.editableTask.dueDate || !this.editableTask.description) {
+                /** 
+                 * ideally we would be doing much more than just checking if fields are empty
+                 * i.e. valid date format, valid status/priority values, etc. and would have
+                 * specific error messages for each field
+                */ 
                 this.error = "All fields must be filled out.";
                 return;
             }

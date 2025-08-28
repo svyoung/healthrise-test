@@ -51,7 +51,8 @@ Components are designed to be modular and reusable, with a clear separation of c
 I integrated **TipTap** for rich text formatting in the comments input, including basic styling options like **bold** and *italic*. I chose this library because it has strong community support and is straightforward to integrate. In a full project, we could expand this to include as many styling options as needed.
 
 ### Enhancement Consideration
-- The input `**assigneeId**` should have a search functionality (upon user input with a debounce) that will drop down an autocomplete list of users who can be assigned to the task, and a user should be entered instead of "assigneeId" so it is more human readable
+- The input `assigneeId` should have a search functionality (upon user input with a debounce) that will drop down an autocomplete list of users who can be assigned to the task, and a user should be entered instead of "assigneeId" so it is more human readable
+- Accessibility (WCAG standards) semantic HTML, etc
 - True pagination, either infinite scrolling or lazy loading
 - **MORE** input sanitization and validation (html escaping, etc) before submitting to the database
 - Collapsible panels or resizable panels

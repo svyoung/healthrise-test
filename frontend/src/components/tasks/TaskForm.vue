@@ -86,6 +86,11 @@ export default {
     async submitTask() {
       console.log("Submitting task", this.title, this.assigneeId, this.dueDate, this.desciption, this.priority, this.status)
       if (!this.title || !this.description || !this.priority || !this.status || this.dueDate === '' || !this.assigneeId) {
+        /** 
+         * ideally we would be doing much more than just checking if fields are empty
+         * i.e. valid date format, valid status/priority values, etc. checking for valid user/assigneeId
+         * and would have specific error messages for each field
+        */ 
         this.error = "All fields must be filled out.";
         return;
       }
@@ -103,7 +108,7 @@ export default {
       try {
         const taskStore = useTaskStore()
         await taskStore.addTask(newTask)
-        
+
         this.resetForm();
       } catch (err) {
         console.error('Error creating task', err);
