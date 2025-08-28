@@ -14,8 +14,6 @@ const mockUser = {
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
-  console.log()
-
   if (username !== mockUser.username) {
     return res.status(400).json({ error: 'Invalid username' });
   }
@@ -27,6 +25,15 @@ router.post('/login', async (req, res) => {
 
   const userPayload = { id: mockUser.id, username: mockUser.username, role: mockUser.role };
   const token = jwt.sign(userPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+  global.historyLog.push({
+    id: Math.random(),
+    userId: req.body.userId || 'unknown',
+    action: 'User login',
+    taskId: null,
+    timestamp: new Date().toISOString(),
+    details: null
+  })
 
   res.json({ token });
 });
