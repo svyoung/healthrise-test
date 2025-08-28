@@ -1,8 +1,11 @@
-const express = require('express');
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-require('dotenv').config();
 
 const mockUser = {
   id: 1,
@@ -26,6 +29,8 @@ router.post('/login', async (req, res) => {
   const userPayload = { id: mockUser.id, username: mockUser.username, role: mockUser.role };
   const token = jwt.sign(userPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
+  // to do: role assignment
+
   global.historyLog.push({
     id: Math.random(),
     userId: req.body.userId || 'unknown',
@@ -38,4 +43,6 @@ router.post('/login', async (req, res) => {
   res.json({ token });
 });
 
-module.exports = router;
+// logout api here
+
+export default router;

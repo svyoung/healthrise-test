@@ -37,16 +37,6 @@ export default {
     },
   },
   methods: {
-    async markDone() {
-      const updatedTask = { ...this.task }
-      updatedTask.status = typeof updatedTask.status === 'string' ? 'Done' : 1
-      this.$emit('update-task', updatedTask)
-      try {
-        await this.reload()
-      } catch (e) {
-        return e
-      }
-    },
     handleClick() {
       if (this.onSelectTask) this.onSelectTask(this.task)
     }

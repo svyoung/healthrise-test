@@ -1,19 +1,10 @@
 <template>
-    <button 
-        @click="$emit('close')"
-        class="mb-2 px-2 py-1 rounded hover:bg-gray-100 text-left"
-    >
-        ← Back to list
-    </button>
-    <div class="text-right block mb-2">
-        <button @click="toggleEdit" class="ml-2 px-2 py-1 bg-gray-300 rounded hover:bg-gray-400 text-[.7rem] cursor-pointer">
-            {{ isEditing ? 'Cancel' : 'Edit' }}
-        </button>
+    <div class="text-left">
         <button 
-            @click="deleteTask" 
-            class="ml-2 px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-[.7rem] cursor-pointer"
+            @click="$emit('close')"
+            class="mb-2 px-2 py-1 rounded hover:bg-gray-100"
         >
-            Delete
+            ← Back to list
         </button>
     </div>
     <div class="bg-gray-100 p-4 rounded-lg relative mb-4 text-gray-500 text-left relative">
@@ -64,7 +55,7 @@
             </div>
             <div v-else>
                 <div class="text-[.7rem] leading-none mb-1">Description:</div>
-                <input v-model="editableTask.description" class="border p-1 rounded w-full bg-white" />
+                <textarea v-model="editableTask.description" class="border p-1 rounded w-full bg-white"></textarea>
             </div>
         </div>
         
@@ -75,15 +66,29 @@
         </div>
     </div>
 
-    <div class="my-10">
+    <div class="text-right block mb-2">
+        <button @click="toggleEdit" class="ml-2 px-2 py-1 bg-gray-300 rounded hover:bg-gray-400 text-[.7rem] cursor-pointer">
+            {{ isEditing ? 'Cancel' : 'Edit' }}
+        </button>
+        <button 
+            @click="deleteTask" 
+            class="ml-2 px-2 py-1 bg-gray-500 text-white rounded hover:bg-red-700 text-[.7rem] cursor-pointer"
+        >
+            Delete
+        </button>
+    </div>
+
+    <div>
         <h2 class="text-left mb-4 font-bold">Leave a comment</h2>
         <RichTextEditor v-model="newComment" class="w-full" />
-        <button 
-            @click="submitComment" 
-            class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-            Submit
-        </button>
+        <div class="flex justify-end mt-2">
+            <button
+                @click="submitComment"
+                class="px-4 py-2 bg-sky-400 text-white rounded hover:bg-sky-700 cursor-pointer transition"
+            >
+                Submit
+            </button>
+        </div>
     </div>
 
     <div class="mt-2 mb-2 text-[.7rem] text-left">
@@ -94,7 +99,6 @@
           class="bg-gray-100 text-gray-700 text-sm mb-2 p-2"
         >
             <div v-html="comment.text"></div>
-
             <!-- 
                 This is getting the task.updatedAt instead of what should be comment.updatedAt 
                 because right now we don't have a Comment entity set up in the db to track that separately.
@@ -111,9 +115,9 @@ import { capitalize } from 'vue';
 
 <script>
 import RichTextEditor from '../editor/TextEditor.vue'
-import { updateTask, removeTask } from '../../utils.js'
 import PrioritySelection from '../inputs/PrioritySelection.vue'
 import StatusSelection from '../inputs/StatusSelection.vue'
+import { useTaskStore } from '../../stores/taskStore'
 
 export default {
     name: 'TaskItemFull',
@@ -121,6 +125,7 @@ export default {
     components: { RichTextEditor, StatusSelection, PrioritySelection },
     data() {
         return {
+            taskStore: useTaskStore(),
             newComment: '',
             isEditing: false,
             editableTask: { title: '', description: '', status: '', dueDate: '', priority: '' }
@@ -154,7 +159,7 @@ export default {
     methods: {
         toggleEdit() {
             if (!this.isEditing) {
-                    this.editableTask = { 
+                this.editableTask = { 
                     title: this.task.title, 
                     description: this.task.description || '',
                     status: this.task.status, 
@@ -165,61 +170,44 @@ export default {
             this.isEditing = !this.isEditing;
         },
         async submitChanges() {
-            console.log("Submitting changes", this.editableTask);
             if (!this.editableTask.title || !this.editableTask.priority || !this.editableTask.status || !this.editableTask.dueDate || !this.editableTask.description) {
                 this.error = "All fields must be filled out.";
                 return;
             }
-            try {
-                const updatedTask = {
-                    ...this.task,
-                    id: this.task.id,
-                    title: this.editableTask.title,
-                    description: this.editableTask.description,
-                    status: this.editableTask.status,
-                    dueDate: this.editableTask.dueDate,
-                    updatedAt: new Date().toISOString()
-                };
-                const currentMetadata = typeof this.task.metadata === 'string' ? JSON.parse(this.task.metadata) : this.task.metadata || {};
-                updatedTask.metadata = { ...currentMetadata, priority: this.editableTask.priority };
-                updatedTask.metadata = JSON.stringify(updatedTask.metadata);
 
-                console.log(updatedTask)
+            const updatedTask = {
+                ...this.task,
+                id: this.task.id,
+                title: this.editableTask.title,
+                description: this.editableTask.description,
+                status: this.editableTask.status,
+                dueDate: this.editableTask.dueDate,
+                updatedAt: new Date().toISOString()
+            };
+            const currentMetadata = typeof this.task.metadata === 'string' ? JSON.parse(this.task.metadata) : this.task.metadata || {};
+            updatedTask.metadata = { ...currentMetadata, priority: this.editableTask.priority };
+            updatedTask.metadata = JSON.stringify(updatedTask.metadata);
 
-                await updateTask(updatedTask);
-                this.$emit('update-task', updatedTask);
-                this.isEditing = false;
-            } catch (e) {
-                console.error("Failed to update task:", e);
-            }
+            await this.taskStore.editTask(updatedTask)
+            this.$emit('update-task', updatedTask);
+            this.isEditing = false;
         },
         async deleteTask() {
+            /**
+             * Should be using a nicer modal to confirm the delete action
+             */
             if (!confirm("Are you sure you want to delete this task?")) return;
 
-            try {
-                await removeTask(this.task.id);
-                this.$emit('delete-task', this.task.id);
-                this.$emit('close');
-            } catch (e) {
-                console.error("Error deleting task:", e);
-            }
+            await this.taskStore.deleteTask(this.task.id)
+            this.$emit('delete-task', this.task.id);
+            this.$emit('close');
         },
-        submitComment() {
-            console.log("this.newComment", this.newComment)
+        async submitComment() {
             if (!this.newComment.trim()) return
 
-            const comments = this.parsedComments;
-
-            comments.push({ text: this.newComment });
-            const updatedTask = { ...this.task, comments: JSON.stringify(comments), updatedAt: new Date().toISOString() };
-
-            try {
-                updateTask(updatedTask);
-                this.$emit('update-task', updatedTask);
-                this.newComment = '';
-            } catch (e) {
-                console.error("Failed to update task:", e);
-            }
+            const updatedTask = await this.taskStore.addComment(this.task, this.newComment)
+            this.$emit('update-task', updatedTask);
+            this.newComment = ''
         }
     }
 };

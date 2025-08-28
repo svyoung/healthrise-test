@@ -1,3 +1,42 @@
+export const fetchTasks = async (limit = 30) => {
+  try {
+    const res = await fetch('http://localhost:4000/api/tasks');
+    if (!res.ok) {
+      throw new Error(`Failed to fetch tasks: ${res.status}`);
+    }
+    const tasks = await res.json();
+    /** 
+     * using this method to mock a "pagination" effect, the likely scenario
+     * is we use a query param to limit the number of tasks returned with
+     * a page size or cursor & offsets
+     * */ 
+    return tasks.slice(0, limit).reverse(); // fake "descending" order
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
+export const createTask = async (newTask) => {
+  try {
+    const res = await fetch('http://localhost:4000/api/tasks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newTask)
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to create task: ${res.status}`);
+    }
+
+    const createdTask = await res.json();
+    return createdTask;
+  } catch (err) {
+    console.error('There was an error creating the task', err);
+    throw err;
+  }
+}
+
 export const updateTask = async (updatedTask) => {
     try {
         const res = await fetch(`http://localhost:4000/api/tasks/${updatedTask.id}`, {

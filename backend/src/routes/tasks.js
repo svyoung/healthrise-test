@@ -10,9 +10,9 @@ router.get('/', (req, res) => {
 })
 
 // add task
-router.post('/api/tasks', taskInputValidator, (req, res) => {
+router.post('/', taskInputValidator, (req, res) => {
     const newTask = req.body
-    newTask.id = Math.random()
+    newTask.id = Math.random() // could use uuid() instead for better uniqueness and less collisions
     global.tasks.push(newTask)
   
     global.historyLog.push({
@@ -29,7 +29,7 @@ router.post('/api/tasks', taskInputValidator, (req, res) => {
 })
 
 // edit task
-router.put('/api/tasks/:id', taskInputValidator, (req, res) => {
+router.put('/:id', taskInputValidator, (req, res) => {
     const { id } = req.params
     const taskIndex = global.tasks.findIndex(t => String(t.id) === String(id))
   
@@ -57,7 +57,7 @@ router.put('/api/tasks/:id', taskInputValidator, (req, res) => {
 })
 
 // delete task
-router.delete('/api/tasks/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
     const { id } = req.params
     const taskIndex = global.tasks.findIndex(t => String(t.id) === String(id))
   

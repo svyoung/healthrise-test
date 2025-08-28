@@ -20,8 +20,7 @@
     <!-- mobile menu -->
     <div v-if="menuOpen"
       class="fixed inset-0 z-50 bg-white p-6 flex flex-col gap-6 w-full md:w-1/3 shadow-md">
-      <button @click="menuOpen = false"
-              class="absolute top-4 right-4 p-2 rounded hover:bg-gray-200">X</button>
+      <button @click="menuOpen = false" class="absolute top-4 right-4 p-2 rounded hover:bg-gray-200">X</button>
 
       <ul class="flex flex-col gap-4 text-lg w-full">
         <li>
@@ -71,7 +70,7 @@
             <TaskItemFull :task="selectedTask" @close="selectedTask = null" @update-task="updateTaskInList" @delete-task="handleDeleteTask" />
           </div>
           <div v-else class="mt-4 text-gray-400">
-            <TaskList :tasks="tasks" @select-task="handleSelectTask"/>
+            <TaskList :tasks="taskStore.tasks" @select-task="handleSelectTask"/>
           </div>
         </div>
       </div>
@@ -84,61 +83,55 @@ import TaskList from "./tasks/TaskList.vue"
 import TaskForm from "./tasks/TaskForm.vue"
 import TaskItemFull from "./tasks/TaskItemFull.vue"
 import ActivityLog from "./activitylog/ActivityLog.vue"
-import { fetchActivityLogs } from "@/utils"
+import { useTaskStore } from '../stores/taskStore'
 
 export default {
   components: { TaskList, TaskForm, TaskItemFull, ActivityLog },
+  setup() {
+    const taskStore = useTaskStore();
+    return { taskStore };
+  },
   data() {
     return {
-      tasks: [],
       selectedTask: null,
       menuOpen: false,
       showForm: true,
       showFormMobileActive: false,
       isMobile: window.innerWidth < 768,
       showActivityLog: false,
-      activityLogs: []
     }
   },
   methods: {
+    showFormMobile() {
+      this.showFormMobileActive = true
+      this.showActivityLog = false
+      this.menuOpen = false
+    },
     addTask(task) {
-      this.tasks.unshift(task)
+      this.taskStore.addTask(task);
       this.showFormMobileActive = false
     },
-    async loadTasks() {
-      const res = await fetch('http://localhost:4000/api/tasks')
-      this.tasks = (await res.json()).slice(0, 30).reverse()
+    viewActivityLog() {
+      this.showActivityLog = true
+      this.menuOpen = false
+    },
+    closeActivityLog() {
+      this.showActivityLog = false
     },
     handleSelectTask(task) {
       this.selectedTask = task
     },
     updateTaskInList(updatedTask) {
-      const index = this.tasks.findIndex(t => t.id === updatedTask.id);
-      if (index !== -1) this.tasks.splice(index, 1, updatedTask);
+      this.taskStore.editTask(updatedTask);
       this.selectedTask = updatedTask;
     },
     handleDeleteTask(taskId) {
-      this.tasks = this.tasks.filter(t => t.id !== taskId);
+      this.taskStore.deleteTask(taskId);
       if (this.selectedTask?.id === taskId) this.selectedTask = null;
-    },
-    showFormMobile() {
-      this.showFormMobileActive = true
-      this.menuOpen = false
-    },
-    viewActivityLog() {
-      this.showActivityLog = true
-      this.menuOpen = false
-      this.loadActivityLogs()
-    },
-    async loadActivityLogs() {
-      this.activityLogs = await fetchActivityLogs();
-    },
-    closeActivityLog() {
-      this.showActivityLog = false
     },
   },
   created() {
-    this.loadTasks()
+    this.taskStore.loadTasks();
     window.addEventListener("resize", () => {
       this.isMobile = window.innerWidth < 768
     })

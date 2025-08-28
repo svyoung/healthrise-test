@@ -1,4 +1,4 @@
-const { validateTaskInput } = require('../utils/validators');
+import { validateTaskInput } from '../utils/validators.js';
 
 function taskInputValidator(req, res, next) {
   if (!validateTaskInput(req.body)) {
@@ -7,4 +7,4 @@ function taskInputValidator(req, res, next) {
   next();
 }
 
-module.exports = { taskInputValidator };
+export { taskInputValidator };

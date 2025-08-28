@@ -29,14 +29,14 @@ http://localhost:8080/
 
 ## UI Design
 
-Because of the limited time, I used **TailwindCSS** and **MUI** to build the front end’s design.  
-The layout is a **split panel**:
+Because of the limited time, I used TailwindCSS and MUI to build the front end’s design.  
+The layout is a split panel:
 
 - **Left Panel** → Task form input  
 - **Right Panel** → List of tasks  
 
 
-On **mobile view**, the layout becomes **full screen**, while the **collapsible hamburger menu** remains accessible on all screens. 
+On mobile view, the layout becomes full screen, while the collapsible hamburger menu remains accessible on all screens. 
 
 Desktop view - split screen. Clicking on the hamburger menu will show a 30-40% width of the viewport
 
@@ -51,7 +51,8 @@ Components are designed to be modular and reusable, with a clear separation of c
 I integrated **TipTap** for rich text formatting in the comments input, including basic styling options like **bold** and *italic*. I chose this library because it has strong community support and is straightforward to integrate. In a full project, we could expand this to include as many styling options as needed.
 
 ### Enhancement Consideration
-- The input **assigneeId** should have a search functionality (upon user input with a debounce) that will drop down an autocomplete list of users who can be assigned to the task, and a user should be entered instead of "assigneeId" so it is more human readable
+- The input `**assigneeId**` should have a search functionality (upon user input with a debounce) that will drop down an autocomplete list of users who can be assigned to the task, and a user should be entered instead of "assigneeId" so it is more human readable
+- True pagination, either infinite scrolling or lazy loading
 - **MORE** input sanitization and validation (html escaping, etc) before submitting to the database
 - Collapsible panels or resizable panels
 - More options in the editing of the task (change task type: bug, task, story, etc...)
@@ -72,13 +73,16 @@ Task
   },
   description: String,
   dueDate: Date,
-  status: String,
+  status: String, // Although this should be stored as an ENUM or its own Status Entity Model
   comments: Array,
   metadata: Object,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 }
 ```
+**Note on `metadata`:**
+This dataset should be stored in an ENUM type model for a tighter modeling. For example, `priority` values should be limited to the values that is offered. 
+
 
 ### User
 Inside `backend/src/models/User` has the basic schema for a user, and the `password` property should be a private, securely hashed value. That would be handled in Password Manager kind of service when adding new user into the database. 
@@ -88,7 +92,7 @@ User
 {
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String, required: true }, // hashed value
   role: { type: String, enum: ["admin", "member"], default: "member" },
   createdAt: { type: Date, default: Date.now }
 }
@@ -123,7 +127,7 @@ Notification
 
 ## API
 
-For this project, I set up a mock API using the `tasks.csv` file as a baseline. Even though the CSV had incomplete data, it allowed me to populate the task list and experiment with local CRUD operations, simulating the behavior of a real database. In a production environment, this would involve accessing a proper database with credentials and using ORMs or ODMs to query data.
+For this project, I set up a mock API using the `tasks.csv` file as a baseline. Even though the CSV had incomplete data, it allowed me to populate the task list and experiment with local CRUD operations, simulating the behavior of a real database. Therefore, this current CRUD operations does not persist data manipulation, so refreshing the page will revert back to is original form. In a production environment, this would involve accessing a proper database with credentials and using ORMs or ODMs to query data.
 
 I organized the backend routes using Express routers for both authentication and tasks, keeping the structure clean and modular. Users are authenticated via JWT tokens, and a mock user with a tokenized password is available for testing.  
 
@@ -164,7 +168,7 @@ Vue 3 and the Composition API, using TailwindCSS for rapid styling and optionall
 
 **Features:**
 - Rich text editor: TipTap for formatting tasks, supporting bold, italic, lists, and more.
-- State management: Pinia for lightweight, reactive state handling. (Although Pinia was not use for this test assessment, it should be for a larger portion of the project)
+- State management: Pinia for lightweight, reactive state handling.
 - Routing and API: Vue Router handles page navigation, and Axios is used for communication with the backend.
 - User feedback: Toast notifications, potentially powered by server-sent events for real-time updates.
 

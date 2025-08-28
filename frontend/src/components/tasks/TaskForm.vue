@@ -11,6 +11,7 @@
 
   <div class="mb-4 flex flex-col">
     <label class="text-left text-[.8rem]">Asignee ID</label>
+    <!-- this should be an autocomplete/search for users to select -->
     <input 
       v-model="assigneeId" 
       placeholder="Assignee ID" 
@@ -46,7 +47,7 @@
 
   <button 
     type="submit" 
-    class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
+    class="w-full bg-sky-400 text-white py-2 px-4 rounded hover:bg-sky-700 transition"
   >
     Create Task
   </button>
@@ -57,6 +58,7 @@
 import RichTextEditor from '../editor/TextEditor.vue'
 import PrioritySelection from '../inputs/PrioritySelection.vue'
 import StatusSelection from '../inputs/StatusSelection.vue'
+import { useTaskStore } from '../../stores/taskStore'
 
 export default {
   components: { RichTextEditor, StatusSelection, PrioritySelection},
@@ -76,13 +78,14 @@ export default {
       this.title = ''
       this.assigneeId = ''
       this.dueDate = ''
-      this.desciption = ''
+      this.description = '' // this is supposed to be the "comments" field, but we are reusing it for the task description
       this.priority = 'medium'
       this.status = 'todo'
       this.error = ''
     },
     async submitTask() {
-      if (!this.title || !this.desciption || !this.priority || !this.status || this.dueDate === '' || !this.assigneeId) {
+      console.log("Submitting task", this.title, this.assigneeId, this.dueDate, this.desciption, this.priority, this.status)
+      if (!this.title || !this.description || !this.priority || !this.status || this.dueDate === '' || !this.assigneeId) {
         this.error = "All fields must be filled out.";
         return;
       }
@@ -97,22 +100,13 @@ export default {
         updatedAt: new Date().toISOString()
       }
 
-      console.log("new task", newTask)
-
       try {
-        const res = await fetch('http://localhost:4000/api/tasks', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newTask)
-        })
-        const created = await res.json()
-        console.log('Task created:', created)
-
-        this.$emit('add-task', created)
-
-        this.resetForm()
+        const taskStore = useTaskStore()
+        await taskStore.addTask(newTask)
+        
+        this.resetForm();
       } catch (err) {
-        console.error('There was an error creating this task', err)
+        console.error('Error creating task', err);
       }
     }
   }
