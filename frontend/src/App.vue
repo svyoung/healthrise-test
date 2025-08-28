@@ -1,16 +1,22 @@
 <template>
-  <div>
-    <TaskForm @submit="addTask" />
+  <div id="app">
+    <router-view />
   </div>
 </template>
 
-<script setup lang="ts">
-import TaskForm from './components/tasks/TaskForm.vue';
-import { ref } from 'vue';
-
-const tasks = ref<any[]>([]);
-
-function addTask(task: any) {
-  tasks.value.push(task);
+<script>
+export default {
+  name: 'App',
 }
 </script>
+
+<style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  font-size: 14px;
+}
+</style>

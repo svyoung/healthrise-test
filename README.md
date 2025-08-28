@@ -1,110 +1,77 @@
 # TaskM8 Pro — Advanced Coding Challenge
 
- The goal of this exercise is to assess architectural reasoning, code quality, and awareness of scalable application patterns. This open-ended project is intentionally written with architectural, state, type, and validation pitfalls. There are way too many things to fix!
-
-All tools and IDEs are allowed, but be prepared to explain all code written and decisions made in the submitted solution.
-
-Note that there are more requirements than can be fulfilled in a resonable amount of time. Canditates may choose to mock or stub certain features to focus on other areas that highlight their skills, e.g. API mocks, testing boilerplate, UI skeleton components, etc.
+Forked from https://github.com/healthrise/challenge-vue2-ui/
 
 ---
 
-## Feature Requirements
+## UI Design
 
-### 1. Real-Time Collaboration
-- **Support for real-time:**  
-  - *Explain recommended frameworks:* Socket.io, Pusher, Ably, etc.  
-  - Candidate may **skip sockets** for initial submission, but discuss integration approach.
+Because of the limited time, I used **TailwindCSS** and **MUI** to build the front end’s design.  
+The layout is a **split panel**:
 
-### 2. Flexible Data Models
-- **Entities:**  
-  - Tasks  
-  - Users  
-  - Comments  
-  - Notifications
-- **Design for extensibility:**  
-  - Clearly defined relationships.
+- **Left Panel** → Task form input  
+- **Right Panel** → List of tasks  
 
-### 3. Authentication
-- **Implementation:**  
-  - Basic sign-in (mock logic or real implementation).  
-  - Role or permission field in user model.
+I integrated **TipTap** for rich text formatting and included a few styling options such as **bold**, *italic*, etc.
 
-### 4. Decoupled Architecture
-- **Frontend and backend** as distinct projects/modules.
-- **Clear API/service layers.**  
-- **Separation of concerns.**
-- Candidate may **skip API** for initial submission, but discussion intergration approach.
+On **mobile view**, the layout becomes **full screen**, while the **collapsible hamburger menu** remains accessible on all screens. 
 
-### 5. Advanced Extension (Choose One or Propose Alternative)
-- **History log:** Full change tracking (task/comment edit history).
-- **Notifications:** Real-time or queued (task assigned, completed, or commented).
-- **Advanced access controls:** Granular permissions (admin, member, guest).
-- **Candidate may propose another meaningful extension.**
+Desktop view - split screen. Clicking on the hamburger menu will show a 30-40% width of the viewport
 
-### 6. Bonus
-- **Partial tests:** Provide sample/partial tests (unit, integration, or E2E).
-- **Document architecture and trade-offs.**
+Mobile view - full screen, with the task list showing by default. Click on the hamburger menu will be full screen. Selecting an item will collapse the menu and show you the contents
 
----
+### Enhancement Consideration
+- The input **assigneeId** should have a search functionality (upon user input with a debounce) that will drop down an autocomplete list of users who can be assigned to the task, and a user should be entered instead of "assigneeId" so it is more human readable
+- Collapsible panels or resizable panels
 
-## Functional Requirements
+## Entities
+### Task
+In the `tasks.csv`, there were some missing data that didn't make too much sense. At first I thought `comments` was the actual description of the task, but upon seeing the array of text objects, that they were actually comments from multiple users. The task entity itself was missing a `description` property, as well as things like `createdAt` and `updatedAt`. 
 
-- **Task CRUD with validation:**  
-  - Schema: title, description, labels, priority, status, multi-user assignment, due date.
-  - All API boundaries validated & sanitized.
+So inside `backend/src/models/Task` is how the Task entity should be structured in its most basic form, with `assigneeId` referencing a user, and `comments` referencing the Comments entity in a **one to many** relationship.
 
-- **Comment System:**  
-  - Markdown or rich text support.
-  - Explain chosen implementation (UI/editor, parsing, security).
+```
+Task
+{
+  title: String,
+  assigneeId: { 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  description: String,
+  dueDate: Date,
+  status: String,
+  comments: Array,
+  metadata: Object,
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+}
+```
 
-- **Notifications:**  
-  - Logic (or mock) for assignment, completion, and comment events.
+### User
+Inside `backend/src/models/User` has the basic schema for a user, and the `password` property should be a private, securely hashed value. That would be handled in Password Manager kind of service when adding new user into the database. 
 
-- **Frontend:**
-  - Scoped styling (CSS Modules, SASS/SCSS, styled-components, Tailwind, etc.).
-  - Modular components and clear error/empty state handling.
-  - Responsive design.
+```
+User
+{
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  role: { type: String, enum: ["admin", "member"], default: "member" },
+  createdAt: { type: Date, default: Date.now }
+}
+```
 
-- **Backend:**
-  - RESTful API (mock is also acceptable with provided dataset).
-  - Multi-file structure with clean separation (routing, models, services, utilities).
+### Comment
 
----
+```
+Comment
+{
+  text: { type: String, required: true },
+  author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  task: { type: mongoose.Schema.Types.ObjectId, ref: "Task" },
+  createdAt: { type: Date, default: Date.now }
+}
 
-## Cross-Cutting Concerns
-
-- **Type-safety awareness:**  
-  - Validate/sanitize API, props, responses.
-
-- **Architectural documentation:**  
-  - Convention-following folder structure.
-  - README with rationale for decisions
-- **Testing:**  
-  - At least one critical scenario each for backend and frontend (unit/integration).
-
-- **DevOps awareness:**  
-  - Discuss basic CI/CD setup.
-  - Deployment plan (static hosting, containerization, scaling recommendations).
-
----
-
-## Deliverables
-
-- **Repository link**
-- **Working demo or local install instructions**
-- **As much documentation as is available (README with architectural overview, decision log, and test instructions)** 
-
-A sample dataset has been provided for use in the application.
-
-## Ideas for Investigatation (inclduing, but not limited to...)
-- Build- or run-time errors
-- Version control 
-- Local development tooling
-- Type confusion
-- Data validation and error handling
-- State management
-- Security
-- Accessibility
-- Real-time and notifications
-- API integration
-- Developer documentiation 
+```
+  
