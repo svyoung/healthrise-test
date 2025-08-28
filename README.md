@@ -199,5 +199,5 @@ In cases where tasks had more complex relationships — for example, multiple us
 
 ## For the Future
 - Multi-user collaboration with live updates via WebSockets.
-- Role-based access control (admin vs. member).
+- Role-based access control.
 - Full-text search and advanced filtering for tasks and users
