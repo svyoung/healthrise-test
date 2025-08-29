@@ -212,3 +212,10 @@ In cases where tasks had more complex relationships — for example, multiple us
 I was only able to add one test `backend/src/routes/tasks.test.js` covering the majority of the API
 
 ## Images Screenshots
+
+<img width="1435" height="910" alt="screen2" src="https://github.com/user-attachments/assets/0233b07a-b4bc-4a60-b104-b2f4fd9c11d5" />
+<img width="1462" height="1099" alt="screen1" src="https://github.com/user-attachments/assets/b30c8780-adeb-49a1-ad2e-5a6a66eec0b0" />
+<img width="505" height="909" alt="screen5" src="https://github.com/user-attachments/assets/419758de-24dd-4937-abce-7943c6293ebb" />
+<img width="510" height="911" alt="screen4" src="https://github.com/user-attachments/assets/6925831a-2a15-454f-8188-cc4b6f34ef49" />
+<img width="507" height="906" alt="screen3" src="https://github.com/user-attachments/assets/2d08b34f-7746-4985-b57c-a617ffb55a36" />
+
