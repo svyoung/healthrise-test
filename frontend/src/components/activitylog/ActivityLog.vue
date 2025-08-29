@@ -1,7 +1,5 @@
 <template>
     <div class="p-4">
-      <h2 class="text-xl font-bold mb-4">Activity Log</h2>
-  
       <div v-if="loading" class="text-gray-500 italic">Loading logs...</div>
       <div v-else-if="logs.length === 0" class="text-gray-500 italic">No activity yet.</div>
   

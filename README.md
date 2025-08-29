@@ -29,6 +29,8 @@ npm run serve
 http://localhost:8080/
 - You should be routed to a `/login` page
 - Enter in `admin` as the user name and `password123` as the password
+- Navigate around the page, you should be able to add, edit, delete tasks
+- You should be able to add comments and view activity logs
 
 ## UI Design
 
@@ -173,7 +175,7 @@ Vue 3 and the Composition API, using TailwindCSS for rapid styling and optionall
 **Features:**
 - Rich text editor: TipTap for formatting tasks, supporting bold, italic, lists, and more.
 - State management: Pinia for lightweight, reactive state handling.
-- Routing and API: Vue Router handles page navigation, and Axios is used for communication with the backend. (I used native fetch for now)
+- Routing and API: Vue Router handles page navigation, and Axios for communication with the backend. (I used native fetch for now)
 - User feedback: Toast notifications, potentially powered by server-sent events for real-time updates.
 
 ### Back end
@@ -208,3 +210,5 @@ In cases where tasks had more complex relationships — for example, multiple us
 
 ## Testing
 I was only able to add one test `backend/src/routes/tasks.test.js` covering the majority of the API
+
+## Images Screenshots
