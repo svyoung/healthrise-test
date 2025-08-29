@@ -5,20 +5,23 @@ Forked from https://github.com/healthrise/challenge-vue2-ui/
 ---
 
 ## Installation
-Create an `.env` file and add in a `JWT_SECRET=supersecretkey` (or name it whatever you like) in the `/backend` directory
+
+**ENVIRONMENTAL VARIABLES:**
+- Inside `backend` folder, create an `.env` file and add in a `JWT_SECRET=supersecretkey` (or name it whatever you like)
+- Inside `frontend` folder, create an `.env` and add `VUE_APP_API_HOST=http://localhost:4000`
+
+For the back end server:
+(this will run on http://localhost:4000)
+```
+cd backend/
+npm install
+npm run serve
+```
 
 For the front end:
 
 ```
 cd frontend/
-npm install
-npm run serve
-```
-
-For the back end server:
-
-```
-cd backend/
 npm install
 npm run serve
 ```
@@ -202,3 +205,6 @@ In cases where tasks had more complex relationships — for example, multiple us
 - Multi-user collaboration with live updates via WebSockets.
 - Role-based access control.
 - Full-text search and advanced filtering for tasks and users
+
+## Testing
+I was only able to add one test `backend/src/routes/tasks.test.js` covering the majority of the API
