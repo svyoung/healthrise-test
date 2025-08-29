@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { fetchTasks, updateTask, removeTask, createTask as createTaskAPI, fetchActivityLogs } from '@/utils'
+import { fetchTasks, updateTask, removeTask, createTask as createTaskAPI, fetchActivityLogs } from '../api'
 
 export const useTaskStore = defineStore('task', {
   state: () => ({
@@ -8,9 +8,6 @@ export const useTaskStore = defineStore('task', {
     activityLogs: [],
     showActivityLog: false
   }),
-  getters: {
-    taskCount: (state) => state.tasks.length
-  },
   actions: {
     async loadTasks() {
       this.tasks = (await fetchTasks(30)) // "pagination" by limiting to 30 tasks
