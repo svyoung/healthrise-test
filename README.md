@@ -164,7 +164,7 @@ I implemented a basic activity log using mocked data stored in `backend/src/mock
 
 In a production environment, we would replace this with a proper persistent logging system, storing activity logs in a database. This would allow for querying, filtering, and auditing, and could be paired with real-time updates using Server-Sent Events or WebSockets if live notifications are needed.
 
-## Suggested Architecture
+## SUGGESTED Architecture
 (using the current stack)
 
 ### Front end
@@ -173,7 +173,7 @@ Vue 3 and the Composition API, using TailwindCSS for rapid styling and optionall
 **Features:**
 - Rich text editor: TipTap for formatting tasks, supporting bold, italic, lists, and more.
 - State management: Pinia for lightweight, reactive state handling.
-- Routing and API: Vue Router handles page navigation, and Axios is used for communication with the backend.
+- Routing and API: Vue Router handles page navigation, and Axios is used for communication with the backend. (I used native fetch for now)
 - User feedback: Toast notifications, potentially powered by server-sent events for real-time updates.
 
 ### Back end
